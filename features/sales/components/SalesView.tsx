@@ -6,6 +6,7 @@ import { usePuesto } from "../hooks/use-puesto"
 import { usePuestos } from "../hooks/use-puestos"
 import { useVentasHoy } from "../hooks/use-ventas-hoy"
 import { VenderTab } from "./VenderTab"
+import { ResumenTab } from "@/features/reports/components/ResumenTab"
 
 function formatDate() {
   const d = new Date()
@@ -70,6 +71,8 @@ export function SalesView() {
             selectPuesto={selectPuesto}
             totalHoy={totalHoy}
           />
+        ) : activeTab === "Resumen" ? (
+          <ResumenTab />
         ) : (
           <div className="flex flex-1 items-center justify-center">
             <p className="text-sm text-gray-400">{activeTab} (próximamente)</p>

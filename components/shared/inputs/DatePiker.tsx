@@ -1,118 +1,86 @@
-import { useState } from "react";
-import { CalendarIcon } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
+"use client"
 
-interface DatePickerProps {
-  label?: string;
-  value?: string | Date | null;
-  onChange?: (value?: string) => void;
-  onSelect?: (date: Date) => void;
+import { useRef } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
-  placeholder?: string;
-  disabled?: boolean;
-  disabledCalendar?: boolean | ((date: Date) => boolean);
-  className?: string;
+const MONTHS = [
+  "ene", "feb", "mar", "abr", "may", "jun",
+  "jul", "ago", "sep", "oct", "nov", "dic",
+]
+
+export function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  )
 }
 
-const formatDateLocal = (date: Date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-};
+function formatPill(date: Date, today: Date): string {
+  if (isSameDay(date, today)) return "Hoy"
+  return `${date.getDate()} ${MONTHS[date.getMonth()]}`
+}
 
-const parseLocalDate = (value: string | Date) => {
-  if (value instanceof Date) return value;
-  const [y, m, d] = value.split("-").map(Number);
-  return new Date(y, m - 1, d);
-};
+interface DatePikerProps {
+  value: Date
+  onChange: (date: Date) => void
+  daysToShow?: number
+}
 
-const fixDayPickerDate = (date: Date) => {
-  const fixed = new Date(date);
-  fixed.setHours(12, 0, 0, 0);
-  return fixed;
-};
+export function DatePiker({ value, onChange, daysToShow = 14 }: DatePikerProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-export function DatePicker({
-  label,
-  value,
-  onChange,
-  onSelect,
-  placeholder = "Seleccionar Fecha",
-  disabled = false,
-  disabledCalendar = false,
-  className,
-}: DatePickerProps) {
-  const [open, setOpen] = useState(false);
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
 
-  const displayValue = value
-    ? fixDayPickerDate(parseLocalDate(value))
-    : undefined;
+  const dates = Array.from({ length: daysToShow }, (_, i) => {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    return d
+  })
 
-  const handleSelectDate = (date: Date | undefined) => {
-    if (date) {
-      const fixed = fixDayPickerDate(date);
-      const formatted = formatDateLocal(fixed);
-
-      onChange?.(formatted);
-      onSelect?.(fixed);
-    } else {
-      onChange?.(undefined);
-    }
-
-    setOpen(false);
-  };
+  const scroll = (dir: "left" | "right") => {
+    scrollRef.current?.scrollBy({ left: dir === "left" ? -120 : 120, behavior: "smooth" })
+  }
 
   return (
-    <div className={cn("space-y-1.5", className)}>
-      {label && (
-        <Label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
-          {label}
-        </Label>
-      )}
+    <div className="flex items-center gap-1">
+      <button
+        type="button"
+        onClick={() => scroll("left")}
+        className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+      >
+        <ChevronLeft size={18} />
+      </button>
 
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
+      <div
+        ref={scrollRef}
+        className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {dates.map((date) => (
+          <button
+            key={date.toDateString()}
             type="button"
-            variant="outline"
-            disabled={disabled}
-            className={cn(
-              "w-full pl-3 text-left font-normal focus:ring-primary/30 focus:border-primary/50",
-              !displayValue && "text-muted-foreground",
-            )}
+            onClick={() => onChange(date)}
+            className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              isSameDay(date, value)
+                ? "bg-[#C04422] text-white"
+                : "border border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+            }`}
           >
-            {displayValue
-              ? displayValue.toLocaleDateString("es-ES", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })
-              : placeholder}
+            {formatPill(date, today)}
+          </button>
+        ))}
+      </div>
 
-            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={displayValue}
-            onSelect={handleSelectDate}
-            captionLayout="dropdown"
-            disabled={disabledCalendar}
-            defaultMonth={displayValue}
-          />
-        </PopoverContent>
-      </Popover>
+      <button
+        type="button"
+        onClick={() => scroll("right")}
+        className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+      >
+        <ChevronRight size={18} />
+      </button>
     </div>
-  );
+  )
 }
