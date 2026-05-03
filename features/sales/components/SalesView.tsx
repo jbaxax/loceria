@@ -46,13 +46,13 @@ export function SalesView() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 px-5">
+        <div className="flex w-full border-b border-gray-200 px-5">
           {TABS.map((tab) => (
             <button
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`mr-6 border-b-2 pb-3 pt-3 text-sm transition-colors -mb-px ${
+              className={`mr-6 flex-1 border-b-2 pb-3 pt-3 text-sm transition-colors -mb-px ${
                 activeTab === tab
                   ? "border-[#C04422] font-semibold text-[#C04422]"
                   : "border-transparent font-medium text-gray-400"
