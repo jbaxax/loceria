@@ -15,6 +15,7 @@ export function useRegistrarVenta(puestoId: string | null) {
     onSuccess: () => {
       toast.success("Venta registrada")
       queryClient.invalidateQueries({ queryKey: ["ventas-hoy"] })
+      queryClient.invalidateQueries({ queryKey: ["resumen-dia"] })
     },
     onError: (err: Error) => {
       toast.error(`Error al registrar: ${err.message}`)
