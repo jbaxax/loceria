@@ -87,7 +87,7 @@ export function VenderTab({ puestos, puestoId, puestoNombre, selectPuesto, total
               {...register(`items.${index}.producto`)}
               placeholder="¿Qué vendiste?"
               autoComplete="off"
-              className={`rounded-xl border bg-white px-3 py-2.5 text-sm placeholder:text-gray-400 outline-none focus:border-[#C04422]/40 focus:ring-2 focus:ring-[#C04422]/15 ${
+              className={`rounded-xl border bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#C04422]/40 focus:ring-2 focus:ring-[#C04422]/15 ${
                 errors.items?.[index]?.producto ? "border-red-300" : "border-gray-200"
               }`}
             />
@@ -101,7 +101,7 @@ export function VenderTab({ puestos, puestoId, puestoNombre, selectPuesto, total
                 step="0.01"
                 min="0.01"
                 placeholder="0.00"
-                className={`w-full rounded-xl border bg-white py-2.5 pr-1.5 pl-7 text-sm outline-none focus:border-[#C04422]/40 focus:ring-2 focus:ring-[#C04422]/15 ${
+                className={`w-full rounded-xl border bg-white py-2.5 pr-1.5 pl-7 text-sm text-gray-900 outline-none focus:border-[#C04422]/40 focus:ring-2 focus:ring-[#C04422]/15 ${
                   errors.items?.[index]?.precio_unitario ? "border-red-300" : "border-gray-200"
                 }`}
               />
@@ -111,7 +111,7 @@ export function VenderTab({ puestos, puestoId, puestoNombre, selectPuesto, total
               type="number"
               min="1"
               placeholder="1"
-              className={`w-full rounded-xl border bg-white py-2.5 text-center text-sm outline-none focus:border-[#C04422]/40 focus:ring-2 focus:ring-[#C04422]/15 ${
+              className={`w-full rounded-xl border bg-white py-2.5 text-center text-sm text-gray-900 outline-none focus:border-[#C04422]/40 focus:ring-2 focus:ring-[#C04422]/15 ${
                 errors.items?.[index]?.cantidad ? "border-red-300" : "border-gray-200"
               }`}
             />
