@@ -40,9 +40,6 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
     >
-      <head>
-        <link rel="apple-touch-icon" href="/icon.svg" />
-      </head>
       <body>
         <QueryProvider>
           <ThemeProvider>{children}</ThemeProvider>
