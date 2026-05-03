@@ -34,7 +34,6 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/api/screenshot/desktop",
         sizes: "1280x720",
         type: "image/png",
-        // @ts-expect-error — form_factor is valid in the Web App Manifest spec but not yet typed in Next.js
         form_factor: "wide",
       },
     ],
