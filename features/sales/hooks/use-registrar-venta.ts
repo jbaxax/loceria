@@ -3,14 +3,15 @@ import { toast } from "sonner"
 import { insertVentas } from "../services/ventas.service"
 import { toInsertRows } from "../adapters/venta.adapter"
 import type { VentaFormData } from "../schemas/venta.schema"
-import type { Puesto } from "../types"
 
-export function useRegistrarVenta(puesto: Puesto) {
+export function useRegistrarVenta(puestoId: string | null) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: VentaFormData) =>
-      insertVentas(toInsertRows(data.items, puesto)),
+    mutationFn: (data: VentaFormData) => {
+      if (!puestoId) throw new Error("Selecciona un puesto")
+      return insertVentas(toInsertRows(data.items, puestoId))
+    },
     onSuccess: () => {
       toast.success("Venta registrada")
       queryClient.invalidateQueries({ queryKey: ["ventas-hoy"] })

@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react"
-import type { Puesto } from "../types"
 
-const PUESTO_KEY = "loceria_puesto"
+const PUESTO_KEY = "loceria_puesto_id"
 
 export function usePuesto() {
-  const [puesto, setPuesto] = useState<Puesto>("A")
+  const [puestoId, setPuestoId] = useState<string | null>(null)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem(PUESTO_KEY)
-    if (saved === "A" || saved === "B") setPuesto(saved)
+    if (saved) setPuestoId(saved)
     setHydrated(true)
   }, [])
 
-  const selectPuesto = (p: Puesto) => {
-    setPuesto(p)
-    localStorage.setItem(PUESTO_KEY, p)
+  const selectPuesto = (id: string) => {
+    setPuestoId(id)
+    localStorage.setItem(PUESTO_KEY, id)
   }
 
-  return { puesto, selectPuesto, hydrated }
+  return { puestoId, selectPuesto, hydrated }
 }

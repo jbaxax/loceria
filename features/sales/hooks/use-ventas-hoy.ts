@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
 import { fetchTotalHoy } from "../services/ventas.service"
-import type { Puesto } from "../types"
 
-export function useVentasHoy(puesto: Puesto, enabled: boolean) {
+export function useVentasHoy(puestoId: string | null, enabled: boolean) {
   return useQuery({
-    queryKey: ["ventas-hoy", puesto],
-    queryFn: () => fetchTotalHoy(puesto),
-    enabled,
+    queryKey: ["ventas-hoy", puestoId],
+    queryFn: () => fetchTotalHoy(puestoId!),
+    enabled: enabled && puestoId !== null,
   })
 }

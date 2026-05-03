@@ -5,15 +5,17 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "lucide-react"
 import { ventaSchema, defaultItem, type VentaFormData } from "../schemas/venta.schema"
 import { useRegistrarVenta } from "../hooks/use-registrar-venta"
-import type { Puesto } from "../types"
+import type { PuestoRecord } from "../types"
 
 interface Props {
-  puesto: Puesto
-  selectPuesto: (p: Puesto) => void
+  puestos: PuestoRecord[]
+  puestoId: string | null
+  puestoNombre: string
+  selectPuesto: (id: string) => void
   totalHoy: number
 }
 
-export function VenderTab({ puesto, selectPuesto, totalHoy }: Props) {
+export function VenderTab({ puestos, puestoId, puestoNombre, selectPuesto, totalHoy }: Props) {
   const { register, control, handleSubmit, reset, formState: { errors } } =
     useForm<VentaFormData>({
       resolver: zodResolver(ventaSchema),
@@ -21,7 +23,7 @@ export function VenderTab({ puesto, selectPuesto, totalHoy }: Props) {
     })
 
   const { fields, append, remove } = useFieldArray({ control, name: "items" })
-  const { mutate, isPending } = useRegistrarVenta(puesto)
+  const { mutate, isPending } = useRegistrarVenta(puestoId)
 
   const onSubmit = (data: VentaFormData) =>
     mutate(data, { onSuccess: () => reset({ items: [defaultItem()] }) })
@@ -36,18 +38,18 @@ export function VenderTab({ puesto, selectPuesto, totalHoy }: Props) {
         Puesto de venta
       </p>
       <div className="mb-4 grid grid-cols-2 gap-3">
-        {(["A", "B"] as const).map((p) => (
+        {puestos.map((p) => (
           <button
-            key={p}
+            key={p.id}
             type="button"
-            onClick={() => selectPuesto(p)}
+            onClick={() => selectPuesto(p.id)}
             className={`rounded-2xl py-3.5 text-sm font-semibold transition-all ${
-              puesto === p
+              puestoId === p.id
                 ? "bg-[#C04422] text-white"
                 : "border border-gray-200 bg-white text-gray-700"
             }`}
           >
-            Puesto {p}
+            {p.nombre}
           </button>
         ))}
       </div>
@@ -55,7 +57,7 @@ export function VenderTab({ puesto, selectPuesto, totalHoy }: Props) {
       {/* Vendido hoy */}
       <div className="mb-5 flex items-center justify-between rounded-2xl bg-[#FDDDD0] px-4 py-3">
         <span className="text-sm font-medium text-[#C04422]">
-          Vendido hoy · Puesto {puesto}
+          Vendido hoy · {puestoNombre}
         </span>
         <span className="font-bold text-[#C04422]">S/ {totalHoy.toFixed(2)}</span>
       </div>
@@ -140,7 +142,7 @@ export function VenderTab({ puesto, selectPuesto, totalHoy }: Props) {
       <div className="py-5">
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || !puestoId}
           className="w-full rounded-2xl bg-[#C04422] py-4 text-base font-semibold text-white transition-opacity active:opacity-80 disabled:opacity-60"
         >
           {isPending ? "Registrando..." : "Registrar venta"}

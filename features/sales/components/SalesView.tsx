@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { TABS, type Tab } from "../types"
 import { usePuesto } from "../hooks/use-puesto"
+import { usePuestos } from "../hooks/use-puestos"
 import { useVentasHoy } from "../hooks/use-ventas-hoy"
 import { VenderTab } from "./VenderTab"
 
@@ -18,8 +19,20 @@ function formatDate() {
 
 export function SalesView() {
   const [activeTab, setActiveTab] = useState<Tab>("Vender")
-  const { puesto, selectPuesto, hydrated } = usePuesto()
-  const { data: totalHoy = 0 } = useVentasHoy(puesto, hydrated)
+  const { puestoId, selectPuesto, hydrated } = usePuesto()
+  const { data: puestos = [] } = usePuestos()
+
+  // Auto-select first puesto on first visit
+  useEffect(() => {
+    if (hydrated && !puestoId && puestos.length > 0) {
+      selectPuesto(puestos[0].id)
+    }
+  }, [hydrated, puestoId, puestos, selectPuesto])
+
+  const activePuestoId = puestoId ?? puestos[0]?.id ?? null
+  const activePuesto = puestos.find((p) => p.id === activePuestoId)
+
+  const { data: totalHoy = 0 } = useVentasHoy(activePuestoId, hydrated)
 
   return (
     <div className="flex min-h-screen justify-center bg-[#EDE8E2]">
@@ -51,7 +64,9 @@ export function SalesView() {
 
         {activeTab === "Vender" ? (
           <VenderTab
-            puesto={puesto}
+            puestos={puestos}
+            puestoId={activePuestoId}
+            puestoNombre={activePuesto?.nombre ?? ""}
             selectPuesto={selectPuesto}
             totalHoy={totalHoy}
           />
