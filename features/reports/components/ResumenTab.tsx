@@ -1,8 +1,22 @@
 "use client"
 
 import { useState } from "react"
+import { X } from "lucide-react"
 import { DatePiker, isSameDay } from "@/components/shared/inputs/DatePiker"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { useResumenDia } from "../hooks/use-resumen-dia"
+import { useDeleteVenta } from "../hooks/use-delete-venta"
+import type { VentaItem } from "../types"
 
 const MONTHS = [
   "ene", "feb", "mar", "abr", "may", "jun",
@@ -21,9 +35,49 @@ function startOfToday(): Date {
   return d
 }
 
+function toDateKey(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+}
+
+interface DeleteItemDialogProps {
+  item: VentaItem
+  onConfirm: () => void
+}
+
+function DeleteItemDialog({ item, onConfirm }: DeleteItemDialogProps) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button
+          type="button"
+          className="text-gray-300 transition-colors hover:text-red-400"
+          aria-label="Eliminar venta"
+        >
+          <X size={14} />
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent size="sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿Eliminar esta venta?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {item.producto} ×{item.cantidad} — S/ {item.total.toFixed(2)}. Esta acción no se puede deshacer.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={onConfirm}>
+            Eliminar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+
 export function ResumenTab() {
   const [selectedDate, setSelectedDate] = useState<Date>(startOfToday)
   const { data: resumen, isLoading } = useResumenDia(selectedDate)
+  const { mutate: deleteVenta } = useDeleteVenta(toDateKey(selectedDate))
 
   const totalGeneral = resumen?.totalGeneral ?? 0
   const puestos = resumen?.puestos ?? []
@@ -72,7 +126,10 @@ export function ResumenTab() {
           </p>
           <div className="flex flex-col gap-3">
             {puestos.map((p) => (
-              <div key={p.puestoId} className="overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm">
+              <div
+                key={p.puestoId}
+                className="overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm"
+              >
                 {/* Puesto header */}
                 <div className="flex items-center justify-between px-4 py-3">
                   <span className="text-sm font-semibold text-gray-700">{p.nombre}</span>
@@ -88,7 +145,13 @@ export function ResumenTab() {
                       <span className="text-sm text-gray-700">
                         {item.producto} ×{item.cantidad}
                       </span>
-                      <span className="text-sm text-gray-500">S/ {item.total.toFixed(2)}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">S/ {item.total.toFixed(2)}</span>
+                        <DeleteItemDialog
+                          item={item}
+                          onConfirm={() => deleteVenta(item.id)}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>

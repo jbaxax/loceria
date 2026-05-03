@@ -27,3 +27,8 @@ export async function fetchVentasDia(date: Date): Promise<VentaRow[]> {
   if (error) throw error
   return (data ?? []) as unknown as VentaRow[]
 }
+
+export async function deleteVenta(id: string): Promise<void> {
+  const { error } = await supabase.from("ventas").delete().eq("id", id)
+  if (error) throw error
+}
