@@ -3,5 +3,5 @@ export interface PuestoRecord {
   nombre: string
 }
 
-export const TABS = ["Vender", "Resumen"] as const
+export const TABS = ["Vender", "Resumen", "Proveedores"] as const
 export type Tab = (typeof TABS)[number]

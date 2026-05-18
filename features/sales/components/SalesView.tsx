@@ -8,6 +8,7 @@ import { usePuestos } from "../hooks/use-puestos"
 import { useVentasHoy } from "../hooks/use-ventas-hoy"
 import { VenderTab } from "./VenderTab"
 import { ResumenTab } from "@/features/reports/components/ResumenTab"
+import { ProveedoresTab } from "@/features/suppliers/components/ProveedoresTab"
 
 function formatDate() {
   const d = new Date()
@@ -74,6 +75,10 @@ export function SalesView() {
 
           <TabsContent value="Resumen" className="mt-0 flex flex-1 flex-col">
             <ResumenTab />
+          </TabsContent>
+
+          <TabsContent value="Proveedores" className="mt-0 flex flex-1 flex-col">
+            <ProveedoresTab puestoId={activePuestoId} />
           </TabsContent>
         </Tabs>
 
